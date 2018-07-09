@@ -11,5 +11,5 @@ if __name__ == "__main__":
     wordCounts = words.countByValue()
     
     for word, count in wordCounts.items():
-        print("{} : {}".format(word.encode('utf8'), count))
+        print("{} : {}".format(word, count))
 
