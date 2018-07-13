@@ -1,7 +1,9 @@
-from pyspark import SparkContext
+import sys
+sys.path.insert(0, '.')
+from commons.Utils import Utils
+from pyspark import SparkContext, SparkConf
 
 if __name__ == "__main__":
-
     '''
     Create a Spark program to read the house data from in/RealEstate.csv,
     output the average price for houses with different number of bedrooms.
@@ -33,3 +35,15 @@ if __name__ == "__main__":
     3, 1 and 2 mean the number of bedrooms. 325000 means the average price of houses with 3 bedrooms is 325000.
 
     '''
+    conf = SparkConf().setAppName("housePrice").setMaster("local[3]")
+    sc = SparkContext(conf=conf)
+
+    lines = sc.textFile("in/RealEstate.csv")
+    realEstateRdd = lines.map(lambda line:  Utils.COMMA_DELIMITER.split(line)).filter(lambda fields: fields[0] != 'MLS')
+    realEstateRdd = realEstateRdd.map(lambda fields: (int(fields[3]), (float(fields[2]), 1)))
+    aggregatedRdd = realEstateRdd.reduceByKey(lambda row1, row2: (row1[0] + row2[0], row1[1] + row2[1]))
+    aggregatedRdd = aggregatedRdd.map(lambda row: (row[0], row[1][0] / row[1][1]))
+    values = aggregatedRdd.collect()
+
+    for value in values:
+        print(f'Number of rooms: {value[0]}, average price: {value[1]}')
