@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession, functions as fs
 
 if __name__ == "__main__":
     session = SparkSession.builder.appName("UkMakerSpaces").master("local[*]").getOrCreate()
+    session.sparkContext.setLogLevel("ERROR")
 
     makerSpace = session.read.option("header", "true") \
         .csv("in/uk-makerspaces-identifiable-data.csv")

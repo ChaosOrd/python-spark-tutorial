@@ -1,3 +1,5 @@
+from pyspark.sql import SparkSession
+
 if __name__ == "__main__":
     
     '''    
@@ -36,4 +38,17 @@ if __name__ == "__main__":
     |................|.................|
     |................|.................|
     '''
+    session = SparkSession.builder.appName("StackOverFlowSurvey").getOrCreate()
+    session.sparkContext.setLogLevel("ERROR")
+    dataFrameReader = session.read
+
+    responses = dataFrameReader \
+        .option("header", "true") \
+        .option("inferSchema", value = True) \
+        .csv("in/RealEstate.csv")
+
+    print("=== Print out schema ===")
+    responses.printSchema()
+    responseWithSelectedColumns = responses.select(['Location', 'Price SQ Ft'])
+    groupedData = responseWithSelectedColumns.groupBy("Location").avg('Price SQ Ft').orderBy('avg(Price SQ Ft)').show()
 

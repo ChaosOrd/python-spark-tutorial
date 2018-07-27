@@ -7,7 +7,7 @@ SALARY_MIDPOINT_BUCKET = "salary_midpoint_bucket"
 if __name__ == "__main__":
 
     session = SparkSession.builder.appName("StackOverFlowSurvey").getOrCreate()
-
+    session.sparkContext.setLogLevel("ERROR")
     dataFrameReader = session.read
 
     responses = dataFrameReader \
